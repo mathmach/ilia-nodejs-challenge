@@ -35,6 +35,13 @@ export function Api({ stack }: StackContext) {
         function: 'functions/public.main',
         authorizer: 'none',
       },
+      'GET /wallets': {
+        function: 'functions/wallets.main',
+        authorizer: 'none',
+      },
+      'GET /wallet': {
+        function: 'functions/wallet.main',
+      },
     },
   });
 
