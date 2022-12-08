@@ -43,6 +43,33 @@ const App = () => {
     }
   };
 
+  // Send an API call to the /wallets endpoint.
+  const walletsRequest = async () => {
+    try {
+      const response = await API.get("api", "/wallets");
+      alert(JSON.stringify(response));
+    } catch (error) {
+      console.error(error)
+      alert(error);
+    }
+  };
+
+  // Send an API call to the /wallet endpoint with authentication details.
+  const walletRequest = async () => {
+    try {
+      const response = await API.get("api", "/wallet", {
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession())
+            .getAccessToken()
+            .getJwtToken()}`,
+        },
+      });
+      alert(JSON.stringify(response));
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   // Check if there's any user on mount
   useEffect(() => {
     getUser();
@@ -71,6 +98,8 @@ const App = () => {
       <div className="api-section">
         <button onClick={publicRequest}>call /public</button>
         <button onClick={privateRequest}>call /private</button>
+        <button onClick={walletRequest}>call /wallet</button>
+        <button onClick={walletsRequest}>call /wallets</button>
       </div>
     </div>
   );
