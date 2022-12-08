@@ -30,11 +30,6 @@ export function Api({ stack }: StackContext) {
       },
     },
     routes: {
-      'GET /private': 'functions/private.main',
-      'GET /public': {
-        function: 'functions/public.main',
-        authorizer: 'none',
-      },
       'GET /wallets': {
         function: 'functions/wallets.main',
         authorizer: 'none',
