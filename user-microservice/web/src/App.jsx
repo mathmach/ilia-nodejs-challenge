@@ -21,28 +21,6 @@ const App = () => {
     setUser(null);
   };
 
-  // Send an API call to the /public endpoint
-  const publicRequest = async () => {
-    const response = await API.get("api", "/public");
-    alert(JSON.stringify(response));
-  };
-
-  // Send an API call to the /private endpoint with authentication details.
-  const privateRequest = async () => {
-    try {
-      const response = await API.get("api", "/private", {
-        headers: {
-          Authorization: `Bearer ${(await Auth.currentSession())
-            .getAccessToken()
-            .getJwtToken()}`,
-        },
-      });
-      alert(JSON.stringify(response));
-    } catch (error) {
-      alert(error);
-    }
-  };
-
   // Send an API call to the /wallets endpoint.
   const walletsRequest = async () => {
     try {
@@ -96,8 +74,6 @@ const App = () => {
         </div>
       )}
       <div className="api-section">
-        <button onClick={publicRequest}>call /public</button>
-        <button onClick={privateRequest}>call /private</button>
         <button onClick={walletRequest}>call /wallet</button>
         <button onClick={walletsRequest}>call /wallets</button>
       </div>
