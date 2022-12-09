@@ -6,13 +6,14 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
 
 export type Timestamp = ColumnType<Date | RawBuilder, Date | string | RawBuilder, Date | string | RawBuilder>;
 
-export interface Wallets {
+export interface Transactions {
+  amount: number;
   created: Generated<Timestamp>;
-  userID: string;
-  value: number;
-  walletID: string;
+  id: string;
+  type: string;
+  user_id: string;
 }
 
 export interface Database {
-  wallets: Wallets;
+  transactions: Transactions;
 }

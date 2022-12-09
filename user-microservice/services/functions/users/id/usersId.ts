@@ -1,10 +1,10 @@
 import { User } from '@user-microservice/core/user';
-import { APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyHandlerV2WithJWTAuthorizer } from 'aws-lambda';
+import { APIGatewayProxyEventV2WithLambdaAuthorizer, APIGatewayProxyHandlerV2WithLambdaAuthorizer } from 'aws-lambda';
 import handler from '../../util/handler';
 import type { Users as UserType } from '@user-microservice/core/sql.generated';
 
-export const get: APIGatewayProxyHandlerV2WithJWTAuthorizer = handler<any>(
-  async (event: APIGatewayProxyEventV2WithJWTAuthorizer) => {
+export const get: APIGatewayProxyHandlerV2WithLambdaAuthorizer<any> = handler<any>(
+  async (event: APIGatewayProxyEventV2WithLambdaAuthorizer<any>) => {
     const id = event.pathParameters?.id;
 
     //TODO Validation
@@ -28,8 +28,8 @@ export const get: APIGatewayProxyHandlerV2WithJWTAuthorizer = handler<any>(
   }
 );
 
-export const put: APIGatewayProxyHandlerV2WithJWTAuthorizer = handler<any>(
-  async (event: APIGatewayProxyEventV2WithJWTAuthorizer) => {
+export const put: APIGatewayProxyHandlerV2WithLambdaAuthorizer<any> = handler<any>(
+  async (event: APIGatewayProxyEventV2WithLambdaAuthorizer<any>) => {
     const id = event.pathParameters?.id;
 
     //TODO Validation
@@ -62,8 +62,8 @@ export const put: APIGatewayProxyHandlerV2WithJWTAuthorizer = handler<any>(
   }
 );
 
-export const del: APIGatewayProxyHandlerV2WithJWTAuthorizer = handler<any>(
-  async (event: APIGatewayProxyEventV2WithJWTAuthorizer) => {
+export const del: APIGatewayProxyHandlerV2WithLambdaAuthorizer<any> = handler<any>(
+  async (event: APIGatewayProxyEventV2WithLambdaAuthorizer<any>) => {
     const id = event.pathParameters?.id;
 
     //TODO Validation
