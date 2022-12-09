@@ -1,12 +1,13 @@
-import { Auth, API } from "aws-amplify";
-import React, { useState, useEffect } from "react";
-import Login from "./components/Login";
-import Signup from "./components/Signup";
+import { Auth, API } from 'aws-amplify';
+import React, { useState, useEffect } from 'react';
+import Login from './components/Login';
+import Signup from './components/Signup';
 
 const App = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [screen, setScreen] = useState("signup");
+  const [wallets, setWallets] = useState([]);
+  const [screen, setScreen] = useState('signup');
 
   // Get the current logged in user info
   const getUser = async () => {
@@ -24,10 +25,10 @@ const App = () => {
   // Send an API call to the /wallets endpoint.
   const walletsRequest = async () => {
     try {
-      const response = await API.get("api", "/wallets");
-      alert(JSON.stringify(response));
+      const response = await API.get('api', '/wallets');
+      setWallets(response);
     } catch (error) {
-      console.error(error)
+      console.error(error);
       alert(error);
     }
   };
@@ -35,14 +36,44 @@ const App = () => {
   // Send an API call to the /wallet endpoint with authentication details.
   const walletRequest = async () => {
     try {
-      const response = await API.get("api", "/wallet", {
+      const response = await API.get('api', '/wallet', {
         headers: {
           Authorization: `Bearer ${(await Auth.currentSession())
             .getAccessToken()
             .getJwtToken()}`,
         },
+        queryStringParameters: {
+          userID: user.username,
+        },
       });
-      alert(JSON.stringify(response));
+      setWallets(response);
+    } catch (error) {
+      alert(error);
+    }
+  };
+
+  const createWalletRequest = async (e) => {
+    try {
+      e.preventDefault();
+
+      const fd = new FormData(e.currentTarget);
+      const value = Number(fd.get('value').toString());
+
+      if (!isNaN(value) && value != 0) {
+        e.currentTarget.reset();
+        const response = await API.post('api', '/wallet', {
+          headers: {
+            Authorization: `Bearer ${(await Auth.currentSession())
+              .getAccessToken()
+              .getJwtToken()}`,
+          },
+          body: { value },
+        });
+        setWallets([...wallets, response]);
+        alert('Created');
+      } else {
+        alert('Invalid number!');
+      }
     } catch (error) {
       alert(error);
     }
@@ -66,7 +97,7 @@ const App = () => {
         </div>
       ) : (
         <div>
-          {screen === "signup" ? (
+          {screen === 'signup' ? (
             <Signup setScreen={setScreen} />
           ) : (
             <Login setScreen={setScreen} setUser={setUser} />
@@ -74,9 +105,28 @@ const App = () => {
         </div>
       )}
       <div className="api-section">
-        <button onClick={walletRequest}>call /wallet</button>
-        <button onClick={walletsRequest}>call /wallets</button>
+        {user ? <button onClick={walletRequest}>Get my wallet</button> : null}
+        <button onClick={walletsRequest}>Get all wallets</button>
       </div>
+      {user ? (
+        <form onSubmit={createWalletRequest}>
+          <input type="number" name="value" placeholder="Value" />
+          <button type="submit">Save</button>
+        </form>
+      ) : null}
+
+      <table>
+        <tr>
+          <th>Value</th>
+          <th>Time</th>
+        </tr>
+        {wallets.map((wallet) => (
+          <tr key={wallet.id}>
+            <td>{wallet.value}</td>
+            <td>({wallet.created})</td>
+          </tr>
+        ))}
+      </table>
     </div>
   );
 };

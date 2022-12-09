@@ -5,6 +5,7 @@ import {
 } from '@serverless-stack/resources';
 import { Auth } from './Auth';
 import { Database } from './Database';
+import { sharedEnvironment } from './env';
 
 export function Api({ stack }: StackContext) {
   const rds = use(Database);
@@ -16,32 +17,40 @@ export function Api({ stack }: StackContext) {
   const api = new ApiGateway(stack, 'Api', {
     authorizers: {
       jwt: {
-        type: 'user_pool',
-        userPool: {
-          id: auth.userPoolId,
-          clientIds: [auth.userPoolClientId],
-        },
+        type: 'lambda',
+        function: auth
       },
     },
     defaults: {
       authorizer: 'jwt',
       function: {
         bind: [rds],
-      },
+        environment: sharedEnvironment,
+      }
     },
     routes: {
-      'GET /wallets': {
-        function: 'functions/wallets.main',
+      'POST /auth': {
+        function: 'functions/auth.login',
         authorizer: 'none',
       },
-      'GET /wallet': {
-        function: 'functions/wallet.main',
+      'POST /users': {
+        function: 'functions/users/users.post',
+        authorizer: 'none',
+      },
+      'GET /users': {
+        function: 'functions/users/users.get',
+      },
+      'GET /users/{id}': {
+        function: 'functions/users/id/usersId.get',
+      },
+      'PATCH /users/{id}': {
+        function: 'functions/users/id/usersId.put',
+      },
+      'DELETE /users/{id}': {
+        function: 'functions/users/id/usersId.del',
       },
     },
   });
 
-  // attach permissions for authenticated users to the api
-  auth.attachPermissionsForAuthUsers(stack, [api]);
-
-  return { api, auth };
+  return api;
 }

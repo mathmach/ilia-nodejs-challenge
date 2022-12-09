@@ -3,17 +3,15 @@ import { APIGatewayProxyEventV2WithRequestContext, Context } from 'aws-lambda';
 export default function handler<TRequestContext>(lambda: any) {
   return async function (
     event: APIGatewayProxyEventV2WithRequestContext<TRequestContext>,
-    context: Context
+    context: Context,
+    callback: any
   ) {
     try {
       // Run the Lambda
-      return await lambda(event, context);
+      return await lambda(event, context, callback);
     } catch (e: any) {
       console.error(e);
-      return {
-        statusCode: 500,
-        body: { error: e.message },
-      };
+      throw e;
     }
   };
 }

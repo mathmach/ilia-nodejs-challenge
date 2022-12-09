@@ -1,9 +1,15 @@
-import { Cognito, StackContext } from '@serverless-stack/resources';
+import { Function, StackContext, use } from '@serverless-stack/resources';
+import { Database } from './Database';
+import { sharedEnvironment } from './env';
 
 export function Auth({ stack }: StackContext) {
-  const auth = new Cognito(stack, 'Auth', {
-    login: ['email'],
+  const rds = use(Database);
+
+  const authorize = new Function(stack, 'Auth', {
+    handler: 'functions/auth.verify',
+    environment: sharedEnvironment,
+    bind: [rds],
   });
 
-  return auth;
+  return authorize;
 }
