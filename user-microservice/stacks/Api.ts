@@ -49,6 +49,15 @@ export function Api({ stack }: StackContext) {
       'DELETE /users/{id}': {
         function: 'functions/users/id/usersId.del',
       },
+      'GET /balance': {
+        function: 'functions/balance.get',
+      },
+      'POST /transactions': {
+        function: 'functions/transactions.post',
+      },
+      'GET /transactions': {
+        function: 'functions/transactions.get',
+      },
     },
   });
 

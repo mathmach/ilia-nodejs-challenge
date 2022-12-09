@@ -18,11 +18,11 @@ export async function update(id: string, transaction: TransactionType) {
     .executeTakeFirst();
 }
 
-export function getById(id: string) {
+export function getByType(type: string) {
   return SQL.DB.selectFrom('transactions')
     .selectAll()
-    .where('id', '=', id)
-    .executeTakeFirst();
+    .where('type', '=', type)
+    .execute();
 }
 
 export function getByUserId(userId: string) {

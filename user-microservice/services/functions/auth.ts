@@ -20,6 +20,9 @@ export const verify = handler<APIGatewayAuthorizerResult>(async (event: APIGatew
       authentication.isValid ? 'Allow' : 'Deny',
       event.methodArn
     ),
+    context: {
+      ...authentication.value
+    }
   };
 
   return result;

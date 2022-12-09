@@ -1,8 +1,8 @@
-import { Transaction } from '@wallet-microservice/core/transaction';
 import {
   APIGatewayProxyEventV2WithLambdaAuthorizer,
   APIGatewayProxyHandlerV2WithLambdaAuthorizer,
 } from 'aws-lambda';
+import axios from 'axios';
 import handler from './util/handler';
 
 export const get: APIGatewayProxyHandlerV2WithLambdaAuthorizer<any> = handler<any>(
@@ -13,9 +13,13 @@ export const get: APIGatewayProxyHandlerV2WithLambdaAuthorizer<any> = handler<an
       throw new Error('User not found');
     }
 
-    const result = await Transaction.getBalanceByUserId(userID);
+    const { data } = await axios.get(`${process.env.WALLET_API_URL}/balance`, {
+      headers: {
+        Authorization: event.headers.authorization
+      }
+    });
 
-    if (!result) {
+    if (!data) {
       throw new Error('Balance not found');
     }
 
@@ -24,7 +28,7 @@ export const get: APIGatewayProxyHandlerV2WithLambdaAuthorizer<any> = handler<an
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(result),
+      body: JSON.stringify({ balance: data.total_income - data.total_expense }),
     };
   }
 );
